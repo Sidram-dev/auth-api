@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const connectDB = require("./config/database");
 
 const authRoutes = require("./routes/authRoutes");
+const globalErrorHandler = require("./middleware/errorMiddleware");
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.get("/", (req, res) => {
     message: "Authentication API Running",
   });
 });
+
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 3000;
 

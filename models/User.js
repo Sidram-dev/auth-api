@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-
+const crypto = require("crypto");
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["admin", "user"],
+      enum: ["admin", "user", "manager", "superadmin"],
       default: "user",
     },
 
@@ -46,20 +46,44 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: {
       type: Date,
     },
+
+    passwordResetToken: {
+      type: String,
+    },
+
+    passwordResetExpires: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
   },
 );
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
   if (!this.isModified("password")) {
+    return;
   }
+
   this.password = await bcrypt.hash(this.password, 12);
 });
 
 userSchema.methods.comparePassword = async function (entepassword) {
   return await bcrypt.compare(entepassword, this.password);
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 module.exports = mongoose.model("User", userSchema);

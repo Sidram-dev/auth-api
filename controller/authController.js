@@ -1,48 +1,119 @@
 const authService = require("../services/authService");
 
-exports.register = async (req, res) => {
-  try {
-    const user = await authService.registerUser(req.body);
+const catchAsync = require("../utils/catchAsync");
 
-    if (!user) {
-      res.status(400).json({
-        success: false,
-        message: "User not registered",
-      });
-    }
-    res.status(200).json({
-      success: true,
-      message: "User registered successfully",
-      data: user,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+// exports.register = async (req, res) => {
+//   try {
+//     const user = await authService.registerUser(req.body);
 
-exports.login = async (req, res) => {
-  try {
-    const result = await authService.loginUser(req.body);
-  
-    res.status(200).json({
-      success: true,
-      message: "User logged in successfully",
-      data: result,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+//     if (!user) {
+//       res.status(400).json({
+//         success: false,
+//         message: "User not registered",
+//       });
+//     }
+//     res.status(200).json({
+//       success: true,
+//       message: "User registered successfully",
+//       data: user,
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
 
-exports.profile = async(req, res)=>{
+exports.register = catchAsync(async (req, res) => {
+  const user = await authService.registerUser(req.body, {
+    userAgent: req.get("User-Agent"),
+    ipAddress: req.ip,
+  });
+  res.status(200).json({
+    success: true,
+    message: "User registered successfully",
+    data: user,
+  });
+});
+
+exports.login = catchAsync(async (req, res) => {
+  const result = await authService.loginUser(req.body, {
+    userAgent: req.get("User-Agent"),
+    ipAddress: req.ip,
+  });
+  res.status(200).json({
+    success: true,
+    message: "User logged in successfully",
+    data: result,
+  });
+});
+
+exports.profile = async (req, res) => {
   res.json({
     success: true,
-    data: req.user
-  })
-}
+    data: req.user,
+  });
+};
+
+exports.refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.body;
+  const result = await authService.refreshAccessToken(refreshToken, {
+    userAgent: req.get("User-Agent"),
+    ipAddress: req.ip,
+  });
+  res.status(200).json({
+    suceess: true,
+    message: "Token refreshed successfully",
+    data: result,
+  });
+});
+
+exports.getSession = catchAsync(async (req, res) => {
+  const session = await authService.getUserSession(req.user._id);
+  res.status(200).json({
+    success: true,
+    message: "User session retrieved successfully",
+    count: session.length,
+    data: session,
+  });
+});
+
+exports.deleteSession = catchAsync(async (req, res) => {
+  await authService.deleteSession(req.params.sessionId, req.user._id);
+  res.status(200).json({
+    success: true,
+    message: "Session deleted successfully",
+  });
+});
+
+exports.logoutAllDevices = catchAsync(async (req, res) => {
+  const deletedCount = await authService.logoutAllDevices(req.user._id);
+  res.status(200).json({
+    success: true,
+    message: "Logged out from all devices successfully",
+    deletedSessions: deletedCount,
+  });
+});
+
+exports.forgotPassword = async (req, res) => {
+  const result = await authService.forgotPassword(req.body.email);
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset token generated successfully.",
+    data: result,
+  });
+};
+
+exports.resetPassword = async (req, res) => {
+  const result = await authService.resetPassword(
+    req.params.token,
+    req.body.password,
+  );
+  res.status(200).json({
+    success: true,
+    message: "Password reset successfully.",
+    data: result,
+  });
+};
