@@ -6,7 +6,7 @@ const RefreshToken = require("../models/RefreshToken");
 const generateRefreshToken = require("../utils/generateRefreshToken");
 
 const crypto = require("crypto");
-const sendEmail = require("../utils/sendEmail");
+const sendEmail = require("../utils/email");
 
 exports.registerUser = async (userData, sessionInfo) => {
   const { name, email, password, role } = userData;

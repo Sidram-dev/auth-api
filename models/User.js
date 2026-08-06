@@ -54,6 +54,33 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: {
       type: Date,
     },
+    profileImage: {
+      url: {
+        type: String,
+        default: null,
+      },
+      public_id: {
+        type: String,
+        default: null,
+      },
+    },
+
+    images: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        public_id: {
+          type: String,
+          required: true,
+        },
+        uploadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -73,7 +100,6 @@ userSchema.methods.comparePassword = async function (entepassword) {
 };
 
 userSchema.methods.createPasswordResetToken = function () {
-  
   const resetToken = crypto.randomBytes(32).toString("hex");
 
   this.passwordResetToken = crypto

@@ -9,8 +9,26 @@ const {
 const { validate } = require("../middleware/authMiddleware");
 const { protect, restrictTo } = require("../middleware/authMiddleware");
 
-router.post("/register", registerValidation, validate, authController.register);
-router.post("/login", loginValidation, validate, authController.login);
+const {
+  loginLimiter,
+  registerLimiter,
+  forgotPasswordLimiter,
+} = require("../middleware/rateLimiter");
+
+router.post(
+  "/register",
+  registerLimiter,
+  registerValidation,
+  validate,
+  authController.register,
+);
+router.post(
+  "/login",
+  loginLimiter,
+  loginValidation,
+  validate,
+  authController.login,
+);
 router.get("/profile", protect, authController.profile);
 router.get("/admin", protect, restrictTo("admin"), (req, res) => {
   res.status(200).json({
@@ -52,8 +70,6 @@ router.get("/superadmin", protect, restrictTo("superadmin"), (req, res) => {
   });
 });
 
-
-
 router.post("/refresh-token", authController.refreshToken);
 
 router.get("/sessions", protect, authController.getSession);
@@ -62,8 +78,12 @@ router.delete("/sessions/:sessionId", protect, authController.deleteSession);
 
 router.delete("/sessions", protect, authController.logoutAllDevices);
 
-router.post("/forgot-password",authController.forgotPassword);
+router.post(
+  "/forgot-password",
+  forgotPasswordLimiter,
+  authController.forgotPassword,
+);
 
-router.post("/reset-password/:token",authController.resetPassword);
+router.post("/reset-password/:token", authController.resetPassword);
 
 module.exports = router;
