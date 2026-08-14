@@ -1,5 +1,5 @@
 const uploadToCloudinary = require("../utils/cloudinaryUpload");
-const AppError = require("../utils/AppError");
+const AppError = require("../utils/appError");
 const processImage = require("../utils/imageProcessor");
 exports.uploadImage = async (
   file,

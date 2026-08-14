@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const APIFeatures = require("../utils/apiFeatures");
-const AppError = require("../utils/AppError");
+const AppError = require("../utils/appError");
 const uploadService = require("../services/uploadService");
 const deleteFromCloudinary = require("../utils/cloudinaryDelete");
 

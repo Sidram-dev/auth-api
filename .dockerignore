@@ -1,0 +1,8 @@
+node_modules
+.env
+.git
+.gitignore
+npm-debug.log
+README.md
+README (1).md
+Docker-AuthAPI-Documentation.md

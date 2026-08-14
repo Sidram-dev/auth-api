@@ -1,7 +1,7 @@
 const User = require("../models/User");
 
 const generateToken = require("../utils/generateToken");
-const AppError = require("../utils/AppError");
+const AppError = require("../utils/appError");
 const RefreshToken = require("../models/RefreshToken");
 const generateRefreshToken = require("../utils/generateRefreshToken");
 

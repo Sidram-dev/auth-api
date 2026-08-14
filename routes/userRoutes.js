@@ -26,14 +26,14 @@ router.delete("/:id", userController.deleteUser);
 router.post(
   "/me/images",
   upload.array("images", 10),
-  userController.addMyImages
+  userController.addMyImages,
 );
 
 router.post(
   "/:id/images",
   restrictTo("admin"),
   upload.array("images", 10),
-  userController.addUserImages
+  userController.addUserImages,
 );
 
 router.patch(
