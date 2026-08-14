@@ -19,7 +19,7 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 const app = express();
-const AppError = require("../utils/appError");
+const AppError = require("./utils/appError"); // ✅ Correct path
 
 // connectDB();
 
