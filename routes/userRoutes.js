@@ -4,6 +4,7 @@ const router = express.Router();
 const userController = require("../controller/userController");
 const { protect, restrictTo } = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
+const APIFeatures = require("../utils/apiFeatures");
 
 router.use(protect);
 router.use(restrictTo("admin"));

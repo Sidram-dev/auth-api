@@ -2,6 +2,7 @@ const userService = require("../services/userService");
 const catchAsync = require("../utils/catchAsync");
 const User = require("../models/User");
 const factory = require("./factoryController");
+const APIFeatures = require("../utils/apiFeatures");
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const user = await userService.getAllUsers(req.query);
