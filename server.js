@@ -20,6 +20,8 @@ const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
+const AppError = require("../utils/appError");
+
 // connectDB();
 
 app.use(express.json());
