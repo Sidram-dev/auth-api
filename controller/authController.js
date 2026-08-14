@@ -2,6 +2,8 @@ const authService = require("../services/authService");
 
 const catchAsync = require("../utils/catchAsync");
 
+const AppError = require("../utils/appError");
+
 // exports.register = async (req, res) => {
 //   try {
 //     const user = await authService.registerUser(req.body);
