@@ -27,10 +27,18 @@ const AppError = require("../utils/appError");
 //   }
 // };
 
+// const refreshCookieOptions = {
+//   httpOnly: true,
+//   secure: process.env.NODE_ENV === "development",
+//   sameSite: "lax",
+//   maxAge: 7 * 24 * 60 * 60 * 1000,
+//   path: "/api/auth",
+// };
+
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "development",
-  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000,
   path: "/api/auth",
 };
@@ -79,15 +87,21 @@ exports.profile = async (req, res) => {
 };
 
 exports.refreshToken = catchAsync(async (req, res) => {
-  const { refreshToken } = req.body;
+  const { refreshToken } = req.cookies;
+
   const result = await authService.refreshAccessToken(refreshToken, {
     userAgent: req.get("User-Agent"),
     ipAddress: req.ip,
   });
+
+  res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
+
   res.status(200).json({
-    suceess: true,
+    success: true,
     message: "Token refreshed successfully",
-    data: result,
+    data: {
+      accessToken: result.accessToken,
+    },
   });
 });
 
@@ -139,3 +153,18 @@ exports.resetPassword = async (req, res) => {
     data: result,
   });
 };
+
+exports.logout = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  if (refreshToken) {
+    await authService.logout(refreshToken);
+  }
+
+  res.clearCookie("refreshToken", refreshCookieOptions);
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+});

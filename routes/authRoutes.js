@@ -73,6 +73,8 @@ router.get("/superadmin", protect, restrictTo("superadmin"), (req, res) => {
 
 router.post("/refresh-token", authController.refreshToken);
 
+router.post("/logout", authController.logout);
+
 router.get("/sessions", protect, authController.getSession);
 
 router.delete("/sessions/:sessionId", protect, authController.deleteSession);

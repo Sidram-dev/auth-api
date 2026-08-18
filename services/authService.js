@@ -136,6 +136,16 @@ exports.deleteSession = async (sessionId, userId) => {
   return;
 };
 
+exports.logout = async (refreshToken) => {
+  if (!refreshToken) {
+    return;
+  }
+
+  await RefreshToken.deleteOne({
+    token: refreshToken,
+  });
+};
+
 exports.logoutAllDevices = async (userId) => {
   const reult = await RefreshToken.deleteMany({ user: userId });
   return reult.deletedCount;
